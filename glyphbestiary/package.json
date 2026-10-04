@@ -1,0 +1,16 @@
+{
+  "name": "glyphbestiary-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/curve.test.mjs && node test/pose.test.mjs && node test/genome.test.mjs && node test/mutate.test.mjs && node test/fitness.test.mjs && node test/population.test.mjs && node test/stage.test.mjs && node test/signal.test.mjs",
+    "test:curve": "node curve.test.mjs",
+    "test:genome": "node genome.test.mjs",
+    "test:mutate": "node mutate.test.mjs",
+    "test:fitness": "node fitness.test.mjs",
+    "test:population": "node population.test.mjs",
+    "test:stage": "node stage.test.mjs",
+    "test:signal": "node signal.test.mjs",
+    "test:pose": "node pose.test.mjs"
+  }
+}
