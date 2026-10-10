@@ -90,20 +90,31 @@ export function textSprite(text, { size = 0.6, bg = 'rgba(251,247,236,0.95)', fg
   return sp;
 }
 
-// Pop a bubble above an object for a few seconds.
+// Free the GPU-side texture/material of a sprite that has left the scene for good.
+export function disposeSprite(sp) {
+  sp.material.map?.dispose();
+  sp.material.dispose();
+}
+
+// Pop a bubble above an object for a few seconds. A new bubble replaces the old one
+// immediately, so the old texture is released and its fade updater stops.
 export function say(ctx, parent, text, height = 2.4, dur = 2.6) {
-  if (parent.userData.bubble) parent.remove(parent.userData.bubble);
+  const old = parent.userData.bubble;
+  if (old) { parent.remove(old); old.userData.dead = true; disposeSprite(old); }
   const sp = textSprite(text);
   sp.position.y = height;
   parent.add(sp);
   parent.userData.bubble = sp;
   let t = 0;
   ctx.updaters.push(function fade(dt) {
+    if (sp.userData.dead) return false;
     t += dt;
     sp.material.opacity = t < dur - 0.5 ? 1 : Math.max(0, (dur - t) / 0.5);
     sp.position.y = height + Math.min(t, 0.3) * 0.5;
     if (t >= dur) {
       parent.remove(sp);
+      sp.userData.dead = true;
+      disposeSprite(sp);
       if (parent.userData.bubble === sp) parent.userData.bubble = null;
       return false; // remove updater
     }

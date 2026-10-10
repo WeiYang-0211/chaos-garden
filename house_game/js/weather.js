@@ -94,7 +94,8 @@ export function createWeather(ctx) {
         f.z += Math.cos(t * 0.6 + f.ph) * 0.3 * dt;
         if (f.y < 0) { f.y += BOX.h; f.x = rand(-BOX.x / 2, BOX.x / 2); }
         if (f.x > BOX.x / 2) f.x -= BOX.x;
-        spos.set([f.x, f.y, f.z], i * 3);
+        const k = i * 3;
+        spos[k] = f.x; spos[k + 1] = f.y; spos[k + 2] = f.z;
       }
       sgeo.attributes.position.needsUpdate = true;
       snow.material.opacity = 0.9 * S;

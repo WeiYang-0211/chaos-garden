@@ -21,12 +21,13 @@
     display: grid; place-items: center; text-align: center; border-radius: 3px; transform: rotate(-6deg); }
   #toolbar { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
     display: flex; gap: 8px; padding: 8px; background: var(--paper); border-radius: 6px;
-    box-shadow: 0 4px 18px rgba(0,0,0,.15); }
-  #toolbar button { font: inherit; font-size: 14px; padding: 7px 12px; border: 1px solid #8a7d6a;
-    background: #fbf7ec; color: var(--ink); border-radius: 4px; cursor: pointer; transition: .15s; }
+    box-shadow: 0 4px 18px rgba(0,0,0,.15); width: max-content; max-width: calc(100vw - 32px); overflow-x: auto; }
+  #toolbar button { flex: none; white-space: nowrap; font: inherit; font-size: 14px; padding: 7px 12px;
+    border: 1px solid #8a7d6a; background: #fbf7ec; color: var(--ink); border-radius: 4px; cursor: pointer; transition: .15s; }
   #toolbar button:hover { background: #efe6d2; }
   #toolbar button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
   #toolbar button[aria-pressed="true"] { background: var(--ink); color: #fbf7ec; border-color: var(--ink); }
+  #toolbar button.pulse { animation: pulse .8s ease-out; }
   #seasons { position: fixed; top: 16px; right: 16px; display: flex; gap: 6px; padding: 6px;
     background: var(--paper); border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,.15); }
   #seasons button { font: inherit; font-size: 18px; width: 44px; height: 44px; border: 1px solid #8a7d6a;
@@ -38,15 +39,68 @@
     background: rgba(43,38,32,.88); color: #fbf7ec; border-radius: 3px; white-space: nowrap;
     transform: translate(14px, 14px); opacity: 0; transition: opacity .12s; }
   #tooltip small { display: block; opacity: .7; font-size: 11px; }
-  #toast { position: fixed; top: 22px; left: 50%; transform: translateX(-50%); padding: 8px 18px;
+  #toast { position: fixed; top: 22px; left: 50%; transform: translateX(-50%); padding: 8px 18px; z-index: 7;
     background: rgba(43,38,32,.85); color: #fbf7ec; border-radius: 20px; font-size: 15px;
     letter-spacing: 2px; opacity: 0; transition: opacity .3s; pointer-events: none; }
   #loading { position: fixed; inset: 0; display: grid; place-items: center; background: #e9e4d6;
     font-size: 20px; letter-spacing: 8px; transition: opacity .8s; z-index: 10; }
   body.raking canvas { cursor: crosshair; }
-  @media (max-width: 700px) { #panel { width: auto; right: 16px; } #panel ul { display: none; }
-    #seasons { top: auto; bottom: 120px; right: 50%; transform: translateX(50%); }
-    #toolbar { flex-wrap: wrap; justify-content: center; width: calc(100% - 24px); } }
+
+  /* overlays: album, fortune slip, breathing guide */
+  .overlay { position: fixed; inset: 0; z-index: 6; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 14px; padding: 16px; background: rgba(34, 30, 24, .38);
+    opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+  .btn { font: inherit; font-size: 14px; padding: 7px 14px; border: 1px solid #8a7d6a; background: #fbf7ec;
+    color: var(--ink); border-radius: 4px; cursor: pointer; transition: .15s; }
+  .btn:hover { background: #efe6d2; }
+  .btn:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+  .row { display: flex; gap: 10px; }
+
+  #album .card { width: min(440px, 100%); max-height: 84vh; display: flex; flex-direction: column; gap: 10px;
+    padding: 18px 20px; background: var(--paper); border-left: 4px solid var(--red); border-radius: 4px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.25); backdrop-filter: blur(4px); }
+  #album h2 { margin: 0; font-size: 20px; letter-spacing: 6px; }
+  .bar { height: 6px; background: rgba(43,38,32,.12); border-radius: 3px; overflow: hidden; }
+  #album-bar { height: 100%; width: 0; background: var(--red); transition: width .5s; }
+  .meta { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; opacity: .75; }
+  #album-list { flex: 1; min-height: 0; overflow-y: auto; list-style: none; margin: 0; padding: 0 4px 0 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  #album-list li { min-height: 54px; padding: 8px 10px; border: 1px dashed #b5a88f; border-radius: 4px; }
+  #album-list li.got { border: 1px solid var(--red); background: rgba(184, 50, 42, .07); }
+  #album-list b { display: block; font-size: 14px; font-weight: 600; }
+  #album-list small { display: block; margin-top: 2px; font-size: 11px; line-height: 1.5; opacity: .7; }
+  #album .card > .btn { align-self: flex-end; }
+
+  #fortune-slip { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 156px; min-height: 320px;
+    padding: 22px 12px; background: #fbf7ec; border: 1px solid #c9bb9d; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+  #fortune-slip.again { animation: slipIn .5s ease-out; }
+  .slip-level { writing-mode: vertical-rl; padding: 6px 4px; font-size: 18px; letter-spacing: 6px;
+    color: #fbf7ec; background: var(--red); border-radius: 3px; }
+  .slip-level.mid { background: var(--ink); }
+  .slip-level.soft { background: #8a7d6a; }
+  #fortune-verse { flex: 1; writing-mode: vertical-rl; font-size: 22px; letter-spacing: 6px; line-height: 1.6; }
+  #fortune-yi { font-size: 12px; letter-spacing: 1px; text-align: center; line-height: 1.7; white-space: pre-line; }
+  #fortune-note { font-size: 11px; opacity: .6; }
+
+  #breath { background: none; pointer-events: none; }
+  #breath.show { pointer-events: none; }
+  .breath-ring { display: grid; place-items: center; width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(251,247,236,.94) 58%, rgba(251,247,236,.4) 74%, rgba(251,247,236,0) 75%);
+    box-shadow: 0 0 40px rgba(251,247,236,.45); transform: scale(.55); }
+  #breath-label { font-size: 28px; letter-spacing: 4px; }
+  .breath-hint { padding: 4px 14px; font-size: 13px; letter-spacing: 2px; background: var(--paper); border-radius: 14px; }
+
+  #shutter { position: fixed; inset: 0; z-index: 9; background: #fff; opacity: 0; pointer-events: none; }
+  #shutter.go { animation: shutter .45s ease-out; }
+  @keyframes shutter { from { opacity: .8; } to { opacity: 0; } }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(184,50,42,.55); } 100% { box-shadow: 0 0 0 12px rgba(184,50,42,0); } }
+  @keyframes slipIn { from { opacity: 0; transform: translateY(18px) rotate(-2deg); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 700px) {
+    #panel { width: auto; right: 16px; } #panel ul { display: none; }
+    #seasons { top: auto; bottom: 76px; right: 50%; transform: translateX(50%); }
+  }
 </style>
 <script type="importmap">
 {
@@ -69,9 +123,10 @@
     <li>开启「耙砂」后拖动画出砂纹</li>
     <li>点击宝塔风铃、石灯笼、鹿威</li>
     <li>点击飞龙：喷火加速</li>
-    <li>点击小人、猫、樱花树、枫树</li>
+    <li>点击小人、猫、樱花树、枫树、蝴蝶</li>
     <li>右上角切换四季：春樱 · 夏雨 · 秋枫 · 冬雪</li>
     <li>快捷键：1–4 四季 · N 昼夜 · R 耙砂 · F 跟随龙</li>
+    <li>C 图鉴 · D 禅签 · M 禅乐 · B 调息 · P 拍照</li>
   </ul>
 </div>
 <div id="seasons" role="radiogroup" aria-label="季节"></div>
@@ -82,7 +137,38 @@
   <button id="btn-rotate" aria-pressed="false">🔄 环游</button>
   <button id="btn-reset">🧹 重铺砂纹</button>
   <button id="btn-sound" aria-pressed="true">🔔 声音</button>
+  <button id="btn-music" aria-pressed="false">🎵 禅乐</button>
+  <button id="btn-fortune">🎋 禅签</button>
+  <button id="btn-breath" aria-pressed="false">🧘 调息</button>
+  <button id="btn-album">📜 图鉴</button>
+  <button id="btn-photo">📷 拍照</button>
 </div>
+<div id="album" class="overlay" role="dialog" aria-modal="true" aria-labelledby="album-title">
+  <div class="card">
+    <h2 id="album-title">图鉴 · 禅庭拾遗</h2>
+    <div class="bar"><div id="album-bar"></div></div>
+    <div class="meta"><span id="album-count"></span><span>在庭中点按、耙砂、投石，逐一寻访</span></div>
+    <ul id="album-list"></ul>
+    <button class="btn" data-close>合上图鉴</button>
+  </div>
+</div>
+<div id="fortune" class="overlay" role="dialog" aria-modal="true" aria-label="禅签">
+  <div id="fortune-slip">
+    <div id="fortune-level" class="slip-level"></div>
+    <div id="fortune-verse"></div>
+    <div id="fortune-yi"></div>
+    <div id="fortune-note"></div>
+  </div>
+  <div class="row">
+    <button class="btn" id="fortune-again">再抽一签</button>
+    <button class="btn" data-close>收起</button>
+  </div>
+</div>
+<div id="breath" class="overlay" aria-hidden="true">
+  <div class="breath-ring" id="breath-ring"><span id="breath-label" role="status">吸</span></div>
+  <div class="breath-hint">4 吸 · 4 停 · 4 呼 · 4 停　（B 或 Esc 结束）</div>
+</div>
+<div id="shutter"></div>
 <div id="tooltip" role="status" aria-live="polite"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script type="module" src="./js/main.js"></script>

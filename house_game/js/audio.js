@@ -1,6 +1,6 @@
 // All sounds are synthesized with WebAudio, so the project has no audio assets.
 export class Sfx {
-  constructor() { this.ctx = null; this.enabled = true; }
+  constructor() { this.ctx = null; this.enabled = true; this.music = false; this.musicRoot = 146.83; this.musicTimer = null; }
 
   init() {
     if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
@@ -130,6 +130,27 @@ export class Sfx {
     g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
     o.connect(g); this.out(g);
     o.start(t); o.stop(t + 0.6);
+  }
+
+  // 禅乐: sparse generative notes on a Hirajoshi scale, rooted on the season's pitch (musicRoot).
+  startMusic() {
+    this.stopMusic();
+    this.music = true;
+    const SCALE = [0, 2, 3, 7, 8];
+    const play = () => {
+      if (!this.music) return;
+      const semis = SCALE[(Math.random() * SCALE.length) | 0] + (Math.random() < 0.3 ? 12 : 0);
+      const f = this.musicRoot * 2 ** (semis / 12);
+      this.tone(f, 4 + Math.random() * 2, { gain: 0.045, attack: 0.5 });
+      if (Math.random() < 0.3) this.tone(f * 2, 2.5, { type: 'triangle', gain: 0.012, attack: 0.02, delay: 0.3 });
+      this.musicTimer = setTimeout(play, 1800 + Math.random() * 2200);
+    };
+    play();
+  }
+
+  stopMusic() {
+    this.music = false;
+    clearTimeout(this.musicTimer);
   }
 
   click() { this.tone(1200, 0.05, { type: 'triangle', gain: 0.1, wet: false }); }

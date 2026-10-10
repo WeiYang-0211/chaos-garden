@@ -105,6 +105,10 @@ export function createSand(ctx) {
   }
 
   // Ripples from a dropped pebble: erase front + concentric grooves growing outward.
+  const pebbleGeo = new THREE.SphereGeometry(0.12, 8, 6);
+  const pebbleMat = std(0x55524c);
+  const pebbles = []; // oldest first; capped so long sessions don't pile up draw calls
+  const MAX_PEBBLES = 60;
   const ripples = [];
   const ringGeo = new THREE.RingGeometry(0.96, 1, 64);
   ringGeo.rotateX(-Math.PI / 2);
@@ -120,9 +124,11 @@ export function createSand(ctx) {
       ripples[ripples.length - 1].rings.push(m);
     }
     // a small pebble that stays where it landed
-    const peb = mesh(new THREE.SphereGeometry(0.12, 8, 6), std(0x55524c), x, SAND.Y + 0.05, z);
+    const peb = mesh(pebbleGeo, pebbleMat, x, SAND.Y + 0.05, z);
     peb.scale.y = 0.6;
     ctx.scene.add(peb);
+    pebbles.push(peb);
+    if (pebbles.length > MAX_PEBBLES) ctx.scene.remove(pebbles.shift());
   }
 
   function drawRippleAnnulus(rp, r0, r1) {

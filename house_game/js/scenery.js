@@ -31,7 +31,7 @@ export function createScenery(ctx) {
   scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff0d8, 2.8);
   sun.castShadow = true;
-  const big = renderer.capabilities.maxTextureSize >= 8192;
+  const big = !ctx.lowPower && renderer.capabilities.maxTextureSize >= 8192;
   sun.shadow.mapSize.set(big ? 4096 : 2048, big ? 4096 : 2048);
   Object.assign(sun.shadow.camera, { left: -38, right: 38, top: 38, bottom: -38, near: 1, far: 220 });
   sun.shadow.bias = -0.0003;

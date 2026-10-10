@@ -9,11 +9,18 @@ import { createProps } from './props.js';
 import { createPagoda } from './pagoda.js';
 import { createPeople } from './people.js';
 import { createDragon } from './dragon.js';
+import { createCritters } from './critters.js';
+import { createAlbum, createFortune, createBreath, savePhoto } from './fun.js';
 import { SEASONS, makeEnv, createSeasons } from './seasons.js';
 import { createWeather } from './weather.js';
 
+// Touch screens and narrow windows run a lighter profile (pixel ratio here, shadow map in scenery.js).
+const lowPower = matchMedia('(pointer: coarse)').matches || innerWidth < 700;
+// Root pitch (Hz) of the generative zen music, one per season.
+const MUSIC_ROOT = { spring: 146.83, summer: 110, autumn: 164.81, winter: 123.47 };
+
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, lowPower ? 1.5 : 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -37,7 +44,7 @@ const toastEl = $('toast');
 let toastTimer;
 const startSeason = SEASONS[location.hash.slice(1)] || SEASONS.spring;
 const ctx = {
-  scene, camera, renderer, controls,
+  scene, camera, renderer, controls, lowPower,
   sfx: new Sfx(),
   updaters: [], interactives: [], lanterns: [],
   night: 0, nightTarget: 0, windGust: 0, shake: 0,
@@ -59,10 +66,17 @@ createProps(ctx);
 createPagoda(ctx);
 createDragon(ctx);
 createPeople(ctx);
+createCritters(ctx);
 createWeather(ctx);
 const setSeason = createSeasons(ctx); // last: patches every material already in the scene
 ctx.uSnow.value = ctx.env.snow;
 window.__garden = ctx; // handy for poking at the scene from devtools
+
+// Built once the scene is complete, so the album can list everything clickable in it.
+const album = createAlbum(ctx);
+const fortune = createFortune(ctx);
+const breath = createBreath(ctx);
+let snapshotPending = false;
 
 // ——— picking ———
 const raycaster = new THREE.Raycaster();
@@ -97,6 +111,7 @@ el.addEventListener('pointerdown', (e) => {
     const p = ctx.sand.pick(raycaster);
     if (p) {
       stroke = new ctx.sand.Stroke();
+      album.discover('白砂');
       if (!ctx.sand.onIsland(p)) stroke.add(p.x, p.z);
       controls.enabled = false;
       try { el.setPointerCapture(e.pointerId); } catch { /* synthetic or already-released pointer */ }
@@ -117,7 +132,7 @@ el.addEventListener('pointermove', (e) => {
 el.addEventListener('pointerleave', () => { pointerIn = false; tooltip.style.opacity = 0; });
 
 window.addEventListener('pointerup', (e) => {
-  if (stroke) { stroke = null; controls.enabled = true; down = null; return; }
+  if (stroke) { stroke = null; controls.enabled = !follow; down = null; return; }
   if (!down) return;
   const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
   const quick = performance.now() - down.t < 450;
@@ -126,8 +141,8 @@ window.addEventListener('pointerup', (e) => {
   setNdc(e);
   const r = pick();
   if (!r) return;
-  if (r.info) r.info.onClick(r.hit.point, r.hit.object);
-  else if (!ctx.sand.onIsland(r.sand)) { ctx.sand.ripple(r.sand.x, r.sand.z); ctx.sfx.pebble(); }
+  if (r.info) { r.info.onClick(r.hit.point, r.hit.object); album.discover(r.info.name); }
+  else if (!ctx.sand.onIsland(r.sand)) { ctx.sand.ripple(r.sand.x, r.sand.z); ctx.sfx.pebble(); album.discover('白砂'); }
 });
 
 function updateHover() {
@@ -165,6 +180,19 @@ function toggleFollow() {
   controls.enabled = !follow;
   if (!follow) returning = 2;
 }
+function toggleMusic() {
+  ctx.sfx.init();
+  if (!ctx.sfx.enabled) { ctx.toast('先打开声音，再听禅乐'); return; }
+  if (ctx.sfx.music) ctx.sfx.stopMusic(); else ctx.sfx.startMusic();
+  press('btn-music', ctx.sfx.music);
+  ctx.toast(ctx.sfx.music ? '禅乐 · 随季节流转' : '禅乐 · 止');
+}
+function toggleBreath() {
+  ctx.sfx.init();
+  press('btn-breath', breath.toggle());
+}
+function takePhoto() { snapshotPending = true; }
+
 $('btn-night').addEventListener('click', toggleNight);
 $('btn-rake').addEventListener('click', toggleRake);
 $('btn-follow').addEventListener('click', toggleFollow);
@@ -174,13 +202,29 @@ $('btn-sound').addEventListener('click', () => {
   ctx.sfx.init();
   ctx.sfx.enabled = !ctx.sfx.enabled;
   press('btn-sound', ctx.sfx.enabled);
+  if (!ctx.sfx.enabled && ctx.sfx.music) { ctx.sfx.stopMusic(); press('btn-music', false); }
 });
+$('btn-fortune').addEventListener('click', () => { ctx.sfx.init(); fortune.draw(); });
+$('btn-music').addEventListener('click', toggleMusic);
+$('btn-breath').addEventListener('click', toggleBreath);
+$('btn-album').addEventListener('click', () => album.toggle());
+$('btn-photo').addEventListener('click', takePhoto);
 window.addEventListener('keydown', (e) => {
   if (e.repeat || e.ctrlKey || e.metaKey) return;
   const k = e.key.toLowerCase();
-  if (k === 'n') toggleNight();
+  if (k === 'escape') {
+    album.close();
+    fortune.close();
+    if (breath.isOn) { breath.close(); press('btn-breath', false); }
+  }
+  else if (k === 'n') toggleNight();
   else if (k === 'r') toggleRake();
   else if (k === 'f') toggleFollow();
+  else if (k === 'c') album.toggle();
+  else if (k === 'd') { ctx.sfx.init(); fortune.draw(); }
+  else if (k === 'm') toggleMusic();
+  else if (k === 'b') toggleBreath();
+  else if (k === 'p') takePhoto();
   else { const s = Object.values(SEASONS).find((s) => s.key === k); if (s) chooseSeason(s.id); }
 });
 
@@ -189,6 +233,7 @@ const seasonBar = $('seasons');
 function chooseSeason(id) {
   if (id !== ctx.season.id) ctx.sfx.init();
   setSeason(id);
+  ctx.sfx.musicRoot = MUSIC_ROOT[ctx.season.id];
   for (const b of seasonBar.querySelectorAll('button')) {
     const on = b.dataset.season === ctx.season.id;
     b.setAttribute('aria-checked', String(on));
@@ -257,7 +302,9 @@ renderer.setAnimationLoop(() => {
   shakeOff.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(ctx.shake * 0.5);
   camera.position.add(shakeOff);
   if (frame++ % 2 === 0) updateHover();
+  breath.update(dt);
   renderer.render(scene, camera);
+  if (snapshotPending) { snapshotPending = false; savePhoto(ctx, el); }
   camera.position.sub(shakeOff);
   if (frame === 3) { $('loading').style.opacity = 0; setTimeout(() => $('loading').remove(), 900); }
 });
