@@ -14,6 +14,7 @@
 | [redquill](#redquill) | LLM 驱动的越狱探测：双通道判定 + 防御建议 | Tauri 2.12 · Rust · React 18 · Three.js 0.186 | `npm install && npm run tauri dev` |
 | [gestura · 手迹](#gestura--手迹) | 摄像头追踪手部关键点，食指即笔：速度定粗细、伸展定抬落、拇指定桩 | MediaPipe Hands · Canvas 2D · 原生 ESM | `python serve.py 8000` |
 | [glyphbestiary · 字兽录](#glyphbestiary--字兽录) | 手绘的字演化出一个物种：200 个体按楷行草狂分生态位，手抖即变异 | MediaPipe Hands · Canvas 2D · 原生 ESM | `python serve.py 8020` |
+| [inkmark · 手迹](#inkmark--手迹) | 文字转手写工作台：8 款字体 / 11 种纸张 / OCR / 600 DPI | FastAPI · Pillow · React 19 · TypeScript | `cd inkmark; scripts\run.ps1` |
 
 <details>
 <summary><b>目录结构</b></summary>
@@ -25,7 +26,8 @@ chaos-garden/
 ├─ chronoscope/            # Git 代码考古 · 3D 城市时间轴（Tauri + React + Three.js）
 ├─ redquill/               # LLM 越狱探测 · 双通道判定 + 防御建议（Tauri + Rust + React + Three.js）
 ├─ gestura/                # 手迹 · 摄像头手势绘画（零构建 · 311 项 Node 测试）
-└─ glyphbestiary/          # 字兽录 · 演化的手写体物种（零构建 · 7 组 Node 测试）
+├─ glyphbestiary/          # 字兽录 · 演化的手写体物种（零构建 · 7 组 Node 测试）
+└─ inkmark/                # 手迹 · 文字转手写工作台：字体 / 纸张 / OCR / 高清导出（FastAPI + React）
 ```
 
 </details>
@@ -408,6 +410,59 @@ npm test                    # 8 组纯逻辑测试 / 237 项断言，无浏览�
 
 ---
 
+<a id="inkmark--手迹"></a>
+
+## inkmark · 手迹
+
+一个完整、可本地运行的**文字转手写工作台**。不是调用 AI 逐字画字，而是把开源手写字体、程序化纸张纹理、字格排版和随机瑕疵组合成一张像手写的纸。
+
+![inkmark 手写效果](inkmark/docs/handwriting-sample.jpg)
+
+支持纯文本、`.docx`、PDF（含扫描件逐页 OCR）和图片 OCR；8 款开源手写字体、11 种纸张；预览带水印，导出 300 / 600 DPI 无水印 ZIP 或 PDF。没有登录和付费墙。
+
+<details>
+<summary><b>技术栈</b></summary>
+
+| 层 | 选型 |
+| --- | --- |
+| 后端 | FastAPI · Pillow · NumPy · PyMuPDF · RapidOCR · python-docx |
+| 前端 | React 19 · TypeScript · Vite 6 · lucide-react |
+| 排版 | 中文字格、标点避头尾、英文断行、自动分页、seed 可复现 |
+| 导出 | ZIP（JPG/PNG）· PDF（保留纸张物理尺寸）· 300 / 600 DPI |
+| 工程 | 异步任务队列、进度轮询、文件过期清理、限流、上传校验 |
+| 测试 | 11 项 pytest：布局 / 分页 / 标点 / PDF / ZIP / Word / OCR / API |
+
+</details>
+
+<details>
+<summary><b>核心能力</b></summary>
+
+- **输入**：文本、Word `.docx`、PDF 文字层、扫描 PDF OCR、图片 OCR。
+- **手写感**：真实手写字体 + 字格排版 + 位置抖动 + 笔画抖动 + 随机涂改。
+- **纸张**：实拍桌面、单红线信纸、红/黑格子、考试纸、牛皮纸、旧信笺、点阵本等 11 种。
+- **可复现**：同一个 seed 在预览和下载中使用同一份布局，不会“预览一个样、下载另一个样”。
+- **导出**：预览图带平铺水印；下载为无水印 ZIP 或 PDF，支持 300 / 600 DPI。
+- **完整 UI**：响应式中文界面、字体/纸张缩略图、翻页、放大、OCR 结果可编辑后重新生成。
+
+</details>
+
+<details>
+<summary><b>运行</b></summary>
+
+要求 Python 3.11+、Node.js 20+、pnpm 或 npm。
+
+```powershell
+cd inkmark
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
+powershell -ExecutionPolicy Bypass -File scripts\run.ps1
+```
+
+打开 <http://127.0.0.1:8420>。详细 API、字体授权与二次开发说明见 [`inkmark/README.md`](inkmark/README.md)。
+
+</details>
+
+---
+
 <a id="使用的-ai"></a>
 
 ## 使用的 AI
@@ -423,6 +478,7 @@ npm test                    # 8 组纯逻辑测试 / 237 项断言，无浏览�
 | chronoscope | **space bunny** | 动效重构（连续播放时钟、径向错峰与速度连续缓动、时间轴命令式渲染、任意位置停靠）、真实扫描器（`git2` 遍历与抽样、blob 去重缓存、增量 diff、仓库选择与进度界面）、交互层（射线拾取、悬停 tooltip、文件修改史、提交搜索、键盘步进、入场生长动画）、性能打磨（合成压测、帧统计、地面网格密度修正）与二分查找（`git bisect` 中点算法、阈值自动查找、嫌疑文件高亮） |
 | redquill | **space bunny** | 全部产出：攻击族模板库（载荷与策略框架分离的设计）、变异算子与合法性过滤、双通道判定融合规则、遗传进化循环、并发扫描编排、防御报告推导、3D 攻击树、UI 与交互 |
 | gestura | **space bunny** | 全部产出：模块划分、手部身份追踪规则、关键点几何判定、速度—笔宽映射与 dt 归一化、双层画布策略、四种笔性参数与实现、纸面湿度场与墨滴碰撞模型、八扇区保持判定、八个种子化结构生成器、双手场形变规则、One-Euro 滤波与渲染率重采样、311 项测试、UI 与快捷键 |
+| inkmark | **deepseek-flash** | 全部产出：FastAPI/Pillow 渲染、字格排版、纸张纹理、OCR、异步导出、React UI 与 11 项测试 |
 
 <details>
 <summary><b>分工说明</b></summary>
