@@ -1,0 +1,597 @@
+@media (max-width: 1180px) {
+  .vertical-note {
+    display: none;
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+    gap: 44px;
+  }
+}
+
+@media (max-width: 980px) {
+  .site-nav {
+    display: none;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 42px;
+    padding-top: 54px;
+  }
+
+  .poster {
+    justify-self: start;
+    max-width: 560px;
+  }
+
+  .mode-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-card {
+    min-height: 340px;
+  }
+
+  .stats-band {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 22px;
+  }
+
+  .stat:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .process-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .history-row {
+    grid-template-columns: 70px minmax(0, 1fr) 100px;
+  }
+
+  .history-fighters {
+    display: none;
+  }
+
+  .history-date {
+    display: none;
+  }
+
+  .history-winner {
+    text-align: right;
+  }
+
+  .setup-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .field-grid--three {
+    grid-template-columns: 1fr;
+  }
+
+  .keyword-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .scoreboard {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 20px;
+  }
+
+  .match-core {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding-bottom: 16px;
+  }
+
+  .contestant,
+  .contestant--b {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .contestant--b {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+
+  .contestant__title {
+    display: none;
+  }
+
+  .arena-topbar__status {
+    display: none;
+  }
+
+  .arena-topbar__tools {
+    margin-left: auto;
+  }
+
+  .feed-row {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .arena-feed {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .arena-feed::before {
+    left: 21px;
+  }
+
+  .feed-row--a .speech-card,
+  .feed-row--a .poem-slip,
+  .feed-row--a .chain-card,
+  .feed-row--b .speech-card,
+  .feed-row--b .poem-slip,
+  .feed-row--b .chain-card {
+    grid-column: 2;
+  }
+
+  .feed-marker {
+    grid-column: 1;
+    width: 32px;
+    height: 32px;
+  }
+
+  .verdict-scoreboard {
+    grid-template-columns: 1fr;
+  }
+
+  .verdict-scoreboard__center {
+    display: none;
+  }
+
+  .verdict-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .verdict-foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .verdict-foot__actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --gutter: 18px;
+  }
+
+  .header-inner {
+    min-height: 64px;
+    gap: 12px;
+  }
+
+  .brand-word small {
+    display: none;
+  }
+
+  .engine-pill__detail {
+    display: none;
+  }
+
+  .nav-settings {
+    display: none;
+  }
+
+  .hero-title {
+    gap: 0.03em;
+  }
+
+  .hero-title__main {
+    font-size: clamp(74px, 20vw, 128px);
+  }
+
+  .hero-title__seal {
+    font-size: clamp(46px, 12vw, 80px);
+  }
+
+  .hero-title__sup {
+    display: none;
+  }
+
+  .hero-lead {
+    font-size: 19px;
+  }
+
+  .hero-actions .button {
+    flex: 1;
+  }
+
+  .poster {
+    min-height: 400px;
+    padding: 24px 22px 22px;
+  }
+
+  .poster__side strong {
+    font-size: 25px;
+  }
+
+  .section {
+    padding: 50px 0;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .section-side-note {
+    text-align: left;
+  }
+
+  .mode-card {
+    min-height: 330px;
+    padding: 26px 24px 24px;
+  }
+
+  .mode-card__kicker {
+    margin-top: 28px;
+  }
+
+  .mode-card__desc {
+    font-size: 12px;
+  }
+
+  .stats-band {
+    padding: 26px 0;
+  }
+
+  .stat {
+    padding: 0 16px;
+  }
+
+  .stat:nth-child(3) {
+    padding-left: 0;
+  }
+
+  .history-row {
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+
+  .history-title {
+    font-size: 14px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .footer-version {
+    display: none;
+  }
+
+  .sheet {
+    width: calc(100vw - 16px);
+    max-height: 96vh;
+  }
+
+  .sheet__head {
+    padding: 20px;
+  }
+
+  .sheet__title h2 {
+    font-size: 23px;
+  }
+
+  .sheet__body {
+    padding: 20px;
+  }
+
+  .sheet__foot {
+    flex-wrap: wrap;
+    padding: 16px 20px;
+  }
+
+  .sheet__foot-note {
+    width: 100%;
+  }
+
+  .sheet__foot-actions {
+    width: 100%;
+  }
+
+  .sheet__foot-actions .button {
+    flex: 1;
+  }
+
+  .engine-choices {
+    grid-template-columns: 1fr;
+  }
+
+  .persona-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .keyword-top {
+    grid-template-columns: 1fr;
+  }
+
+  .keyword-preview {
+    width: 100%;
+    aspect-ratio: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .keyword-preview__char {
+    font-size: 40px;
+  }
+
+  .keyword-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .setup-foot {
+    align-items: stretch;
+  }
+
+  .setup-foot__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .setup-foot__action {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .setup-foot__action .button {
+    width: 100%;
+  }
+
+  .setup-error {
+    text-align: left;
+  }
+
+  .arena-topbar__word,
+  .arena-topbar__divider {
+    display: none;
+  }
+
+  .arena-topbar__mode {
+    display: inline;
+  }
+
+  .arena-engine {
+    max-width: 92px;
+  }
+
+  .contestant {
+    padding: 10px;
+    gap: 9px;
+  }
+
+  .contestant__badge {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .contestant__name {
+    font-size: 19px;
+  }
+
+  .contestant__number {
+    font-size: 27px;
+  }
+
+  .contestant__count span {
+    display: none;
+  }
+
+  .speech-card {
+    padding: 16px 16px 13px;
+  }
+
+  .speech-body {
+    font-size: 14.5px;
+    line-height: 2;
+  }
+
+  .poem-slip {
+    padding: 14px 14px 12px;
+  }
+
+  .poem-stage {
+    min-height: 196px;
+  }
+
+  .poem-line {
+    font-size: 26px;
+  }
+
+  .chain-card {
+    padding: 15px 14px 12px;
+  }
+
+  .chain-stage {
+    min-height: 90px;
+    padding: 12px 0;
+  }
+
+  .chain-tile {
+    width: 50px;
+    height: 50px;
+    font-size: 25px;
+  }
+
+  .chain-head {
+    gap: 7px;
+  }
+
+  .chain-meta {
+    font-size: 8px;
+  }
+
+  .feed-row {
+    margin-bottom: 20px;
+  }
+
+  .arena-foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .judge-row,
+  .feed-end {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .verdict-body {
+    padding: 20px 18px;
+  }
+
+  .verdict-reading.has-bestline {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .verdict-bestline {
+    padding: 16px 0 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .verdict-masthead {
+    flex-direction: column;
+  }
+
+  .verdict-meta {
+    align-items: flex-start;
+  }
+
+  .verdict-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .verdict-stamp {
+    width: 68px;
+    height: 68px;
+    font-size: 38px;
+  }
+
+  .verdict-fighter__top {
+    flex-wrap: wrap;
+  }
+
+  .verdict-total {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .verdict-foot {
+    padding: 14px 18px;
+  }
+
+  .verdict-foot__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .verdict-foot__actions .button--primary {
+    grid-column: 1 / -1;
+  }
+
+  .toast-root {
+    right: 16px;
+    bottom: 16px;
+    width: calc(100vw - 32px);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title__main {
+    font-size: 72px;
+  }
+
+  .hero-title__seal {
+    font-size: 48px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .mode-card__title {
+    font-size: 34px;
+  }
+
+  .arena-topbar__left {
+    gap: 6px;
+  }
+
+  .arena-engine {
+    display: none;
+  }
+
+  .arena-tool {
+    padding: 0 7px;
+  }
+
+  .keyword-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .format-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .turn-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .verdict-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .verdict-foot__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .verdict-foot__actions .button--primary {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .arena-curtain {
+    display: none;
+  }
+}

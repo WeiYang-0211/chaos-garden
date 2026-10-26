@@ -15,6 +15,7 @@
 | [gestura · 手迹](#gestura--手迹) | 摄像头追踪手部关键点，食指即笔：速度定粗细、伸展定抬落、拇指定桩 | MediaPipe Hands · Canvas 2D · 原生 ESM | `python serve.py 8000` |
 | [glyphbestiary · 字兽录](#glyphbestiary--字兽录) | 手绘的字演化出一个物种：200 个体按楷行草狂分生态位，手抖即变异 | MediaPipe Hands · Canvas 2D · 原生 ESM | `python serve.py 8020` |
 | [inkmark · 手迹](#inkmark--手迹) | 文字转手写工作台：8 款字体 / 11 种纸张 / OCR / 600 DPI | FastAPI · Pillow · React 19 · TypeScript | `cd inkmark; scripts\run.ps1` |
+| [douyi · 斗文台](#douyi--斗文台) | AI 互斗观测站：两台机器同席，辩论、飞花令与成语接龙 | 原生 ESM · Node SSE 代理 · 零构建 | `npm start` |
 
 <details>
 <summary><b>目录结构</b></summary>
@@ -27,6 +28,7 @@ chaos-garden/
 ├─ redquill/               # LLM 越狱探测 · 双通道判定 + 防御建议（Tauri + Rust + React + Three.js）
 ├─ gestura/                # 手迹 · 摄像头手势绘画（零构建 · 311 项 Node 测试）
 ├─ glyphbestiary/          # 字兽录 · 演化的手写体物种（零构建 · 7 组 Node 测试）
+├─ douyi/                  # 斗文台 · AI 互斗观测站：辩论 + 飞花令 + 成语接龙（零构建 · 51 项 Node 测试）
 └─ inkmark/                # 手迹 · 文字转手写工作台：字体 / 纸张 / OCR / 高清导出（FastAPI + React）
 ```
 
@@ -410,6 +412,58 @@ npm test                    # 8 组纯逻辑测试 / 237 项断言，无浏览�
 
 ---
 
+<a id="douyi--斗文台"></a>
+
+## douyi · 斗文台
+
+两台 AI 分坐甲乙，一张桌案：**舌战**让它们就同一命题立论、驳论、结辩；**飞花令**抽一字为令，
+轮流接古诗词，缺令字、重句、接不上即判负；**成语接龙**上一句的末字就是下一句的首字，首尾
+相衔，接不上即断。可以零配置用本地演示开局，也可以在设置里接任意 OpenAI 兼容模型，让 A、B
+与裁判各用其模型。
+
+<details>
+<summary><b>技术栈</b></summary>
+
+| 层 | 选型 |
+| :--- | :--- |
+| 前端 | 原生 ESM · 无框架 · 无构建 · 无外部字体/素材 |
+| 视觉 | 深墨 / 稻纸 / 朱砂 / 青玉 / 泥金；宋体、楷体、等宽 |
+| 纸面 | 诗笺用 CSS `writing-mode: vertical-rl` 竖排，令字朱砂高亮；成语用四张纸牌首尾相接 |
+| 服务 | Node.js 20+ `http` 静态服务 + `/api/chat` SSE 流式代理 |
+| 模型 | 任意 OpenAI 兼容 `/chat/completions`（DeepSeek / OpenAI / Ollama / 自定义） |
+| 数据 | 437 句本地诗库；1222 条成语与 290 条可接核心；localStorage 设置与往战摘要 |
+
+</details>
+
+<details>
+<summary><b>核心能力</b></summary>
+
+- **三种赛制**：快辩 6 阵 / 鏖战 10 阵；飞花令 8 / 12 / 16 句；成语接龙 8 / 12 / 16 回。
+- **两套引擎**：本地推演零配置可玩；在线模式可让 A、B 与裁判各用一个模型。
+- **本地校验**：在线接句也要过本地诗库/词库校验；命中标「库中」，库外标「待考」，缺字/重句/首字不对可重吟一次，两次不过判负。
+- **断线兜底**：在线调用失败自动切本地推演继续，判词标注「在线中断 · 本地兜底」。
+- **观战体验**：逐字落墨、交替长卷/纸笺/字牌、裁判评议会、胜/和落章、判词可复制。
+- **本地优先**：密钥只在浏览器 localStorage，经本机 Node 代理转发；服务端不落盘、不写日志。
+- **51 项纯逻辑测试**：诗库、成语库、校验、状态机、SSE、裁判 JSON、本地引擎，Node 直跑。
+
+</details>
+
+<details>
+<summary><b>运行</b></summary>
+
+```bash
+cd douyi
+npm start          # http://127.0.0.1:8050/
+npm test           # 51 项测试
+```
+
+需要 Node.js 20+；没有 `npm install`，没有构建步骤。详细赛制、接口与设计说明见
+[`douyi/README.md`](douyi/README.md)。
+
+</details>
+
+---
+
 <a id="inkmark--手迹"></a>
 
 ## inkmark · 手迹
@@ -479,6 +533,7 @@ powershell -ExecutionPolicy Bypass -File scripts\run.ps1
 | redquill | **space bunny** | 全部产出：攻击族模板库（载荷与策略框架分离的设计）、变异算子与合法性过滤、双通道判定融合规则、遗传进化循环、并发扫描编排、防御报告推导、3D 攻击树、UI 与交互 |
 | gestura | **space bunny** | 全部产出：模块划分、手部身份追踪规则、关键点几何判定、速度—笔宽映射与 dt 归一化、双层画布策略、四种笔性参数与实现、纸面湿度场与墨滴碰撞模型、八扇区保持判定、八个种子化结构生成器、双手场形变规则、One-Euro 滤波与渲染率重采样、311 项测试、UI 与快捷键 |
 | inkmark | **deepseek-flash** | 全部产出：FastAPI/Pillow 渲染、字格排版、纸张纹理、OCR、异步导出、React UI 与 11 项测试 |
+| douyi | **deepseek-flash** | 全部产出：三种赛制、诗库与成语库、本地推演、SSE 代理、纸面 UI、51 项测试 |
 
 <details>
 <summary><b>分工说明</b></summary>

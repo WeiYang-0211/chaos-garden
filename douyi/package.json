@@ -1,0 +1,14 @@
+{
+  "name": "douwen-arena",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "斗文台 · AI 互斗观测站：辩论与飞花令",
+  "scripts": {
+    "start": "node serve.mjs",
+    "test": "node --test test/poetry.test.mjs test/sse.test.mjs test/offline.test.mjs test/battle.test.mjs test/judge.test.mjs test/idioms.test.mjs test/chain.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
